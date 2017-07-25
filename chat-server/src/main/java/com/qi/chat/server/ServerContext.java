@@ -2,6 +2,9 @@ package com.qi.chat.server;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import com.qi.chat.common.ReadCompletionHandler;
 
 /**
  * 服务器上下文
@@ -10,10 +13,11 @@ import java.nio.channels.AsynchronousSocketChannel;
  *
  */
 public class ServerContext {
-
+	
 	private AsynchronousSocketChannelGroup ascg = new AsynchronousSocketChannelGroup();
+	
 	private AsynchronousServerSocketChannel serverSocketChannel;
-
+	
 	public boolean addSocketChannel(AsynchronousSocketChannel socketChannel) {
 		return ascg.addSocketChannel(socketChannel);
 	}
@@ -25,4 +29,5 @@ public class ServerContext {
 	public AsynchronousServerSocketChannel getServerSocketChannel() {
 		return serverSocketChannel;
 	}
+	
 }

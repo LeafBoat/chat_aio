@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,21 +18,23 @@ public class ChatServer {
 	private ServerContext context = new ServerContext();
 
 	private ChatServer(Builder builder) {
-		ExecutorService executorSevice = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
-				Executors.defaultThreadFactory());
+		/*ExecutorService executorSevice = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(),
+				Executors.defaultThreadFactory());*/
 		try {
 			/*
 			 * withThreadPool(executor)与withCachedThreadPool(executor,0)是一样的。
 			 * 如果withCachedThreadPool(executor,initialSize)中initialSize为0，
 			 * 那么线程不会阻塞，导致接收服务器终止， 但是可以创建一个CountDownLatch阻塞线程或开启一个循环线程，这样程序不会终止。
 			 */
-			AsynchronousChannelGroup group = AsynchronousChannelGroup.withCachedThreadPool(executorSevice, 0);
+
+			AsynchronousChannelGroup group = AsynchronousChannelGroup
+					.withFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
 			serverSocketChannel = AsynchronousServerSocketChannel.open(group);
-			context.setServerSocketChannel(serverSocketChannel);
 			serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 			serverSocketChannel.setOption(StandardSocketOptions.SO_RCVBUF, 64 * 1024);
 			serverSocketChannel = AsynchronousServerSocketChannel.open(group);
 			serverSocketChannel.bind(builder.inetSocketAddress, 0);
+			context.setServerSocketChannel(serverSocketChannel);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -39,7 +42,13 @@ public class ChatServer {
 
 	public void startServer() {
 		// startBeart();
+//		CountDownLatch countDownLatch = new CountDownLatch(1);
 		serverSocketChannel.accept(context, acceptCompletionHandler);
+	/*	try {
+			countDownLatch.await();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}*/
 	}
 
 	private void startBeart() {
@@ -57,8 +66,8 @@ public class ChatServer {
 				}
 			}
 		});
-		 checkHeartbeatThread.setDaemon(true);
-		 checkHeartbeatThread.setPriority(Thread.MIN_PRIORITY);
+		checkHeartbeatThread.setDaemon(true);
+		checkHeartbeatThread.setPriority(Thread.MIN_PRIORITY);
 		checkHeartbeatThread.start();
 	}
 

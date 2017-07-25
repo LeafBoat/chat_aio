@@ -22,8 +22,7 @@ public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSo
 			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_SNDBUF, 32 * 1024);
 			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 			ByteBuffer byteBuffer = ByteBuffer.allocate(32*1024);
-			ReadCompletionHandler handler = new ReadCompletionHandler();
-			asynchronousSocketChannel.read(byteBuffer, byteBuffer, handler);
+			asynchronousSocketChannel.read(byteBuffer, byteBuffer, new ReadCompletionHandler(asynchronousSocketChannel));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
