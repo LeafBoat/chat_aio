@@ -1,5 +1,6 @@
 package com.qi.chat.client;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.CompletionHandler;
 
@@ -9,22 +10,15 @@ public class ConnectionCompletionHandler implements CompletionHandler<Void, Chat
 
 	@Override
 	public void completed(Void result, ChatClient chatClient) {
-		/*ByteBuffer byteBuffer = ByteBuffer.allocate(3072);
-		ReadCompletionHandler readCompletionHandler = new ReadCompletionHandler();
+		ByteBuffer byteBuffer = ByteBuffer.allocate(3072);
+	/*	ReadCompletionHandler readCompletionHandler = new ReadCompletionHandler(
+				chatClient.getAsynchronousSocketChannel());
 		chatClient.getAsynchronousSocketChannel().read(byteBuffer, byteBuffer, readCompletionHandler);*/
-		int count = 0;
-		while (chatClient.getAsynchronousSocketChannel().isOpen()) {
-			if (count == 2)
-				break;
-			chatClient.send("你好", "jim");
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
+		try {
+			chatClient.sendImage("D:\\360Downloads\\Software/DingTalk_3.5.1.5.exe");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		count++;
 	}
 
 	@Override
